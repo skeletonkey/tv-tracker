@@ -7,9 +7,10 @@ import instanceGen "github.com/skeletonkey/lib-instance-gen-go/app"
 func main() {
 	app := instanceGen.NewApp("tv-tracker", "app")
 	app.SetupApp(
+		app.WithCodeOwners("* shiny.gift6738@fastmail.com"),
 		app.WithDependencies("github.com/pioz/tvdb"),
 		app.WithGoVersion("1.23"),
 		app.WithMakefile(),
-		app.WithCodeOwners("* shiny.gift6738@fastmail.com"),
+		app.WithPackages("tvdb"),
 	).Generate()
 }

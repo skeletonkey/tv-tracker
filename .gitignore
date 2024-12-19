@@ -1,6 +1,9 @@
 .envrc
+.vscode
 
 bin
+
+config/*.conf
 
 web/dist
 web/node_modules
