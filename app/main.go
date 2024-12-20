@@ -4,11 +4,22 @@ import (
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
+	middleware "github.com/labstack/echo/v4/middleware"
 	"github.com/skeletonkey/tv-tracker/app/tvdb"
 )
 
 func main() {
 	e := echo.New()
+
+		// CORS configuration with middleware.CORSWithConfig()
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{
+			"http://localhost:8081",
+			"http://192.168.0.22:8081",
+			"http://0.0.0.0:8081",
+		},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	}))
 
 	e.GET("/search/:query", searchHandler)
 
