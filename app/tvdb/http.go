@@ -14,7 +14,7 @@ func (c client) makeCall(method, endpoint string, reqObj, resObj interface{}) er
 	if reqObj != nil {
 		jsonBody, err := json.Marshal(reqObj)
 		if err != nil {
-		return fmt.Errorf("error marshaling JSON (%s): %s", jsonBody, err)
+			return fmt.Errorf("error marshaling JSON (%s): %s", jsonBody, err)
 		}
 		byteBody := bytes.NewBuffer(jsonBody)
 		req, err = http.NewRequest(method, endpoint, byteBody)
