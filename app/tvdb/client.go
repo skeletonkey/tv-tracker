@@ -31,15 +31,18 @@ func getClient() (client, error) {
 		}
 
 		var login loginPage
-		c.makeCall("POST", c.baseUrl+"/login", c.login, &login)
-		c.token = fmt.Sprintf("Bearer %s", login.Data.Token)
+		err := c.makeCall("POST", c.baseUrl+"/login", c.login, &login)
+		if err != nil {
+			return c, fmt.Errorf("error logging in: %s", err)
+		}
+		c.token = "Bearer " + login.Data.Token
 	}
 
 	return c, nil
 }
 
 func Search(search string) ([]SearchResult, error) {
-	cacheKey := genCacheKey("search_" + search)
+	cacheKey := genCacheKey("search", search)
 	c, err := getClient()
 	if err != nil {
 		return nil, err
@@ -53,10 +56,16 @@ func Search(search string) ([]SearchResult, error) {
 	var sp SearchPage
 	result := make([]SearchResult, 0)
 
-	c.makeCall("GET", c.baseUrl+"/search?query="+url.QueryEscape(search), nil, &sp)
+	err = c.makeCall("GET", c.baseUrl+"/search?query="+url.QueryEscape(search), nil, &sp)
+	if err != nil {
+		return nil, fmt.Errorf("error searching for %s: %s", search, err)
+	}
 	result = append(result, sp.Data...)
 	for sp.Links.Next != "" && sp.Links.Next != sp.Links.Self {
-		c.makeCall("GET", sp.Links.Next, nil, &sp)
+		err = c.makeCall("GET", sp.Links.Next, nil, &sp)
+		if err != nil {
+			return nil, fmt.Errorf("error searching for next page results(%s): %s", sp.Links.Next, err)
+		}
 		result = append(result, sp.Data...)
 		if len(result) >= maxEntriesReturned {
 			break

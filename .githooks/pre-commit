@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Requires the following to be run to take effect:
+# chmod +x .githooks/pre-commit
+# git config core.hooksPath .githooks
+
+# Run go fmt
+go fmt ./...
+
+# Run go vet
+go vet ./...
+
+# Run golangci-lint
+golangci-lint run
+
+# If any of the commands exit with a non-zero status, exit with an error
+if [[ $? -ne 0 ]]; then
+  echo "Error: Code formatting or linting failed. Please fix the issues and try again."
+  exit 1
+fi

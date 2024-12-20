@@ -1,6 +1,10 @@
 package tvdb
 
-import "github.com/patrickmn/go-cache"
+import (
+	"strings"
+
+	"github.com/patrickmn/go-cache"
+)
 
 var globalCache *cache.Cache
 
@@ -9,6 +13,6 @@ const (
 	cacheCleanupInt = 50 // minutes
 )
 
-func genCacheKey(name string) string {
-	return name
+func genCacheKey(parts ...string) string {
+	return strings.Join(parts, "_")
 }

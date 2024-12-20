@@ -5,13 +5,13 @@ import (
 
 	echo "github.com/labstack/echo/v4"
 	middleware "github.com/labstack/echo/v4/middleware"
+
 	"github.com/skeletonkey/tv-tracker/app/tvdb"
 )
 
 func main() {
 	e := echo.New()
 
-	// CORS configuration with middleware.CORSWithConfig()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{
 			"http://localhost:8081",
@@ -36,5 +36,4 @@ func searchHandler(c echo.Context) error {
 		return c.String(http.StatusNoContent, "")
 	}
 	return c.JSON(http.StatusOK, res)
-
 }

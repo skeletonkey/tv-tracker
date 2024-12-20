@@ -8,25 +8,26 @@ import (
 	"net/http"
 )
 
-func (c client) makeCall(method, endpoint string, reqObj, resObj interface{}) {
+func (c client) makeCall(method, endpoint string, reqObj, resObj interface{}) error {
 	var req *http.Request
 	var err error
 	if reqObj != nil {
 		jsonBody, err := json.Marshal(reqObj)
 		if err != nil {
-			fmt.Println("Error marshaling JSON:", err)
-			return
+		return fmt.Errorf("error marshaling JSON (%s): %s", jsonBody, err)
 		}
 		byteBody := bytes.NewBuffer(jsonBody)
 		req, err = http.NewRequest(method, endpoint, byteBody)
+		if err != nil {
+			return fmt.Errorf("error creating request: %s", err)
+		}
 		req.Header.Set("Content-Type", "application/json")
 	} else {
 		req, err = http.NewRequest(method, endpoint, nil)
 	}
 
 	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
+		return fmt.Errorf("error creating request: %s", err)
 	}
 
 	if c.token != "" {
@@ -36,20 +37,19 @@ func (c client) makeCall(method, endpoint string, reqObj, resObj interface{}) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error sending request:", err)
-		return
+		return fmt.Errorf("error sending request: %s", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
-		return
+		return fmt.Errorf("error reading response body: %s", err)
 	}
 
 	err = json.Unmarshal(responseBody, &resObj)
 	if err != nil {
-		fmt.Println("Error unmarshaling JSON:", err)
-		return
+		return fmt.Errorf("error unmarshaling JSON (%s): %s", responseBody, err)
 	}
+
+	return nil
 }

@@ -1,3 +1,19 @@
 # TV Tracker
 
-working off of https://adeshg7.medium.com/vuejs-golang-a-rare-combination-53538b6fb918
+## App
+
+API written in Go.
+
+### Endpoints
+
+#### Search
+
+`/search/query string`
+
+This will his the TVDB API's search endpoint. It will return the 1st 100 entries with no pagination.
+
+NOTE: this may change over time!
+
+## Web UI
+
+Written using Vue.
