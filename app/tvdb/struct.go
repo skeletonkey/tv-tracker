@@ -3,7 +3,7 @@ package tvdb
 type client struct {
 	login          tvdbLogin
 	baseUrl, token string
-	refreshToken bool
+	refreshToken   bool
 }
 
 type tvdbLogin struct {

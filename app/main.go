@@ -11,7 +11,7 @@ import (
 func main() {
 	e := echo.New()
 
-		// CORS configuration with middleware.CORSWithConfig()
+	// CORS configuration with middleware.CORSWithConfig()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{
 			"http://localhost:8081",
