@@ -4,29 +4,24 @@ import (
 	"fmt"
 	"net/url"
 	"time"
-
-	cache "github.com/patrickmn/go-cache"
 )
 
 const (
-	maxEntriesReturned = 100
-	searchCacheExp     = 60 * 24 // minutes
+	maxEntriesReturned =  100
+	searchCacheExp = 60 * 24 // minutes
 )
 
 var c client
 
 func getClient() (client, error) {
 	if c.token == "" || c.refreshToken {
-		if globalCache == nil {
-			globalCache = cache.New(cacheDefaultExp*time.Minute, cacheCleanupInt*time.Minute)
-		}
 		cfg := getConfig()
 		c = client{
 			login: tvdbLogin{
 				ApiKey: cfg.ApiKey,
 				Pin:    cfg.Pin,
 			},
-			baseUrl:      cfg.BaseUrl,
+			baseUrl: cfg.BaseUrl,
 			refreshToken: c.refreshToken,
 		}
 
@@ -42,14 +37,14 @@ func getClient() (client, error) {
 }
 
 func Search(search string) ([]SearchResult, error) {
-	cacheKey := genCacheKey("search", search)
+	cacheKey := GenCacheKey("search_" + search)
 	c, err := getClient()
 	if err != nil {
 		return nil, err
 	}
 
-	if item, found := globalCache.Get(cacheKey); found {
-		fmt.Printf("Cache hit for %s\n", cacheKey)
+	if item, found := GetCacheItem(cacheKey); found {
+		fmt.Printf("Cache hit for %s\n", item)
 		return item.([]SearchResult), nil
 	}
 
@@ -72,7 +67,7 @@ func Search(search string) ([]SearchResult, error) {
 		}
 	}
 
-	globalCache.Set(cacheKey, result, searchCacheExp*time.Minute)
+	SetCacheItem(cacheKey, result, searchCacheExp * time.Minute)
 
 	return result, nil
 }
