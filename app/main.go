@@ -36,4 +36,5 @@ func searchHandler(c echo.Context) error {
 		return c.String(http.StatusNoContent, "")
 	}
 	return c.JSON(http.StatusOK, res)
+
 }

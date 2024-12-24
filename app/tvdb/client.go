@@ -44,7 +44,7 @@ func Search(search string) ([]SearchResult, error) {
 	}
 
 	if item, found := GetCacheItem(cacheKey); found {
-		fmt.Printf("Cache hit for %s\n", item)
+		fmt.Printf("Cache hit for %s (%s)\n", search, cacheKey)
 		return item.([]SearchResult), nil
 	}
 
