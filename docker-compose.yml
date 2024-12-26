@@ -1,0 +1,18 @@
+version: "3.9"  # Specify the Docker Compose file version
+
+services:
+  backend:
+    build: 
+      context: .  # Path to your Go server code
+      dockerfile: Dockerfile  # Optional Dockerfile for the backend
+    ports:
+      - "8083:8083"  # Map port 8083 on the host to 8083 in the container
+
+  frontend:
+    build:
+      context: ./web  # Path to your Vue.js app code
+      dockerfile: Dockerfile  # Optional Dockerfile for the frontend
+    ports:
+      - "8080:8080"  # Map port 8080 on the host to 8080 in the container
+    depends_on:
+      - backend  # Ensure the backend starts before the frontend
