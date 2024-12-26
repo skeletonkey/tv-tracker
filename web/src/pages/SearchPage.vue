@@ -22,11 +22,14 @@ export default {
   data() {
     return {
       searchString: '',
-      searchResults: [],
-      cardsPerRow: 3
+      searchResults: []
     };
   },
   props: {
+    cardsPerRow: {
+      type: Number,
+      default: 3,
+    },
     imageHeight: {
       type: Number,
       default: 250,
@@ -35,13 +38,6 @@ export default {
       type: Number,
       default: 170,
     }
-  },
-  mounted() {
-    this.calculateCardsPerRow();
-    window.addEventListener('resize', this.calculateCardsPerRow);
-  },
-  beforeUnmount() {
-    window.removeEventListener('resize', this.calculateCardsPerRow);
   },
   computed: {
     groupedSearchResults() {
@@ -65,11 +61,6 @@ export default {
     },
     truncatedDescription(description) {
       return description.length > 50 ? description.substring(0, 50) + '...' : description;
-    },
-    calculateCardsPerRow() {
-      const containerWidth = this.$el.offsetWidth; // Get width of the container element
-      const cardWidth = 200; // Max card width with margin
-      this.cardsPerRow = Math.max(1, Math.floor(containerWidth / cardWidth));
     },
   }
 };
