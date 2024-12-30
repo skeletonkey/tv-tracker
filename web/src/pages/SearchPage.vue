@@ -5,9 +5,9 @@
 
     <div class="card-container" v-if="searchResults.length > 0">
       <div class="card-row" v-for="(row, rowIndex) in groupedSearchResults" :key="rowIndex">
-        <div class="card" v-for="item in row" :key="item.id">
+        <div class="card" v-for="item in row" :key="item.id" @click="addItem(item.id)">
           <div class="card-title">{{ item.translations.eng }}</div>
-          <img :src="item.thumbnail" alt="Item Image" width="170" height="250"
+          <img :src="item.thumbnail" alt="Item Image" :width="imageWidth" :height="imageHeight"
             :title="item.overviews.eng">
           <div class="card-description">{{ truncatedDescription(item.overviews.eng) }}</div>
         </div>
@@ -57,11 +57,31 @@ export default {
         })
         .catch(error => {
           console.error('Error fetching data:', error);
+          alert('Error fetching search results.'); // Alert user about the error
         });
     },
     truncatedDescription(description) {
       return description.length > 50 ? description.substring(0, 50) + '...' : description;
     },
+    addItem(id) {
+      fetch(`http://localhost:8083/add/${id}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          console.log("response: ", response)
+          alert('Show added');
+          // return response.json(); // Assuming the response is JSON
+        })
+        // .then(data => {
+        //   // Handle successful response, e.g., show a success message
+        //   alert('Show added');
+        // })
+        .catch(error => {
+          console.error('Error adding item:', error);
+          alert('Error adding show.'); // Alert user about the error
+        });
+    }
   }
 };
 </script>
@@ -85,6 +105,7 @@ export default {
   padding: 10px;
   border-radius: 5px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer; /* Add cursor style to indicate clickability */
 }
 
 .card-title {
