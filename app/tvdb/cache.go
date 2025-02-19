@@ -16,7 +16,7 @@ const (
 
 func getCache() *cache.Cache {
 	if globalCache == nil {
-			globalCache = cache.New(cacheDefaultExp * time.Minute, cacheCleanupInt * time.Minute)
+		globalCache = cache.New(cacheDefaultExp*time.Minute, cacheCleanupInt*time.Minute)
 	}
 	return globalCache
 }

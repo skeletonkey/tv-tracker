@@ -1,6 +1,8 @@
 // lib-instance-gen-go: File auto generated -- DO NOT EDIT!!!
 .DEFAULT_GOAL=build
 
+include Makefile.db
+
 build:
 	go fmt ./...
 	go vet ./...
