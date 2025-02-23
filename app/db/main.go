@@ -13,6 +13,7 @@ var dbInst *sql.DB
 
 func InitDb(ctx context.Context, wg *sync.WaitGroup) {
 	fmt.Println("Initializing Database")
+	wg.Add(1)
 	go func (ctx context.Context, wg *sync.WaitGroup) {
 		defer wg.Done()
 		<-ctx.Done()
