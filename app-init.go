@@ -11,6 +11,6 @@ func main() {
 		app.WithDependencies("github.com/pioz/tvdb"),
 		app.WithGoVersion("1.23"),
 		app.WithMakefile(),
-		app.WithPackages("db", "tvdb"),
+		app.WithPackages("db", "server", "tvdb"),
 	).Generate()
 }
