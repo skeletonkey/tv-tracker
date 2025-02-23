@@ -6,11 +6,13 @@ import (
 	echo "github.com/labstack/echo/v4"
 	middleware "github.com/labstack/echo/v4/middleware"
 
+	"github.com/skeletonkey/tv-tracker/app/db"
 	"github.com/skeletonkey/tv-tracker/app/tvdb"
 )
 
 func main() {
 	e := echo.New()
+	db.InitDb()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{
