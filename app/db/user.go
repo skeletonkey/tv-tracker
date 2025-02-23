@@ -8,7 +8,6 @@ import (
 
 func createUser(username, email, password string) (string, error) {
 	conn := getDb()
-	defer closeDb()
 
 	userId := uuid.New().String()
 	_, err := conn.Exec(`

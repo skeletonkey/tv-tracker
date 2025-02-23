@@ -3,39 +3,38 @@ package db
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"sync"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/skeletonkey/lib-core-go/logger"
 )
 
 var dbInst *sql.DB
 
+// InitDb sets up the connection to the database and allows for graceful shutdown.
+// The wait group is properly incremented.
 func InitDb(ctx context.Context, wg *sync.WaitGroup) {
-	fmt.Println("Initializing Database")
+	log := logger.Get()
+	log.Info().Msg("Initializing Database")
+
 	wg.Add(1)
-	go func (ctx context.Context, wg *sync.WaitGroup) {
+	go func(ctx context.Context, wg *sync.WaitGroup) {
 		defer wg.Done()
 		<-ctx.Done()
-		closeDb()
-		fmt.Println("Database Closed")
+		if dbInst != nil {
+			dbInst.Close()
+		}
+		log.Info().Msg("Database Closed")
 	}(ctx, wg)
-	_ = getDb()
-}
 
-func getDb() *sql.DB {
 	cfg := getConfig()
 	var err error
 	dbInst, err = sql.Open("sqlite3", cfg.File)
 	if err != nil {
-		panic(err)
+		log.Fatal().Err(err).Str("db file name", cfg.File).Msg("error opening db file")
 	}
-
-	return dbInst
 }
 
-func closeDb() {
-	if dbInst != nil {
-		dbInst.Close()
-	}
+func getDb() *sql.DB {
+	return dbInst
 }

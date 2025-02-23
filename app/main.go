@@ -2,55 +2,37 @@ package main
 
 import (
 	"context"
-	"net/http"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 
-	echo "github.com/labstack/echo/v4"
-	middleware "github.com/labstack/echo/v4/middleware"
-
+	"github.com/skeletonkey/lib-core-go/logger"
 	"github.com/skeletonkey/tv-tracker/app/db"
-	"github.com/skeletonkey/tv-tracker/app/tvdb"
+	"github.com/skeletonkey/tv-tracker/app/server"
 )
 
 func main() {
-	sigChan := make(chan os.Signal, 1)
-    signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-
+	log := logger.Get()
+	log.Info().Msg("Starting Service")
 
 	var wg sync.WaitGroup
 	ctx, cancel := context.WithCancel(context.Background())
 
-	e := echo.New()
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
 	db.InitDb(ctx, &wg)
+	server.Run(ctx, &wg)
 
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{
-			"http://localhost:8081",
-			"http://192.168.0.22:8081",
-			"http://0.0.0.0:8081",
-		},
-		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
-	}))
-
-	e.GET("/search/:query", searchHandler)
-
-	go func() {
-
+	select {
+	case sig := <-sigChan:
+		log.Info().Int("OS Signal", int(sig.(syscall.Signal))).Msg("OS Signal received")
+		cancel()
+	case <-ctx.Done():
+		log.Info().Msg("context has been cancelled")
 	}
-	e.Logger.Fatal(e.Start(":8083"))
 
-	cancel()
 	wg.Wait()
-}
-
-func searchHandler(c echo.Context) error {
-	query := c.Param("query")
-	res, err := tvdb.Search(query)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
-	}
-	if len(res) == 0 {
-		return c.String(http.StatusNoContent, "")
-	}
-	return c.JSON(http.StatusOK, res)
+	log.Info().Msg("Shutting down service")
 }
