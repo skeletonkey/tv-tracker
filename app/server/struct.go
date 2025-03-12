@@ -7,14 +7,13 @@ type server struct {
 }
 
 type User struct {
-        ID            int    `json:"id" validate:"omitempty"`
-        UUID          string `json:"uuid"`
-        Username      string `json:"username" validate:"required"`
-        Email         string `json:"email" validate:"required,email"`
-        Password      string `json:"password" validate:"required,min=8,max=20"`
-        PasswordConf  string `json:"password_confirm" validate:"omitempty,eqfield=Password"`
+	ID           int    `json:"id" validate:"omitempty"`
+	UUID         string `json:"uuid"`
+	Username     string `json:"username" validate:"required"`
+	Email        string `json:"email" validate:"required,email"`
+	Password     string `json:"password" validate:"required,min=8,max=20"`
+	PasswordConf string `json:"password_confirm" validate:"omitempty,eqfield=Password"`
 }
-
 
 type Show struct {
 	ID          int    `json:"id"`

@@ -3,8 +3,8 @@ package server
 import (
 	"net/http"
 
-	echo "github.com/labstack/echo/v4"
 	validator "github.com/go-playground/validator/v10"
+	echo "github.com/labstack/echo/v4"
 
 	"github.com/skeletonkey/tv-tracker/app/tvdb"
 )
@@ -17,14 +17,12 @@ func setRoutes(e *echo.Echo) {
 	// Users
 	group.POST("/user", createUser)
 
-
 }
 
 func createUser(c echo.Context) error {
 	var user User
 	validate := validator.New()
 
-	
 }
 
 func searchHandler(c echo.Context) error {
