@@ -18,6 +18,7 @@ func setRoutes(e *echo.Echo) {
 
 	// User
 	group.POST("/user", createUser)
+	group.GET("/user", getUser)
 
 }
 
@@ -57,4 +58,30 @@ func searchHandler(c echo.Context) error {
 		return c.String(http.StatusNoContent, "")
 	}
 	return c.JSON(http.StatusOK, res)
+}
+
+func getUser(c echo.Context) error {
+	log := logger.Get()
+	log.Trace().Msg("getUser")
+	var user User
+
+	if err := c.Bind(&user); err != nil {
+		log.Debug().Err(err).Msg("Error Binding")
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(user); err != nil {
+		log.Debug().Err(err).Msg("Error Validating")
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	userId, err := db.GetUser(user.Username, user.Password)
+	if err != nil {
+		log.Debug().Str("username", user.Username).Err(err).Msg("Error finding user")
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	log.Info().Str("userId", userId).Msg("User found")
+	return c.JSON(http.StatusOK, map[string]string{"user_id": userId})
 }
