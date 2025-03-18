@@ -9,7 +9,7 @@ import (
 
 const bcryptCost = 10
 
-func createUser(username, email, password string) (string, error) {
+func CreateUser(username, email, password string) (string, error) {
 	conn := getDb()
 
 	encPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcryptCost)
@@ -21,7 +21,7 @@ func createUser(username, email, password string) (string, error) {
 	userId := uuid.New().String()
 
 	_, err = conn.Exec(`
-                INSERT INTO users (uuid, username, email, password)
+                INSERT INTO user (uuid, username, email, password)
                 VALUES (?,?,?,?)
         `, userId, username, email, password)
 	if err != nil {

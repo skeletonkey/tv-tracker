@@ -6,6 +6,8 @@ import (
 	validator "github.com/go-playground/validator/v10"
 	echo "github.com/labstack/echo/v4"
 
+	"github.com/skeletonkey/lib-core-go/logger"
+	"github.com/skeletonkey/tv-tracker/app/db"
 	"github.com/skeletonkey/tv-tracker/app/tvdb"
 )
 
@@ -14,15 +16,35 @@ func setRoutes(e *echo.Echo) {
 
 	group := e.Group("/api/v1")
 
-	// Users
+	// User
 	group.POST("/user", createUser)
 
 }
 
 func createUser(c echo.Context) error {
+	log := logger.Get()
+	log.Trace().Msg("createUser")
 	var user User
-	validate := validator.New()
 
+	if err := c.Bind(&user); err != nil {
+		log.Debug().Err(err).Msg("Error Binding")
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(user); err != nil {
+		log.Debug().Err(err).Msg("Error Validating")
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	userId, err := db.CreateUser(user.Username, user.Email, user.Password)
+	if err != nil {
+		log.Debug().Err(err).Msg("Error creating user")
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	log.Info().Str("userId", userId).Msg("User created")
+	return c.JSON(http.StatusCreated, map[string]string{"user_id": userId})
 }
 
 func searchHandler(c echo.Context) error {
