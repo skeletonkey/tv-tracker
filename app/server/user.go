@@ -8,19 +8,7 @@ import (
 
 	"github.com/skeletonkey/lib-core-go/logger"
 	"github.com/skeletonkey/tv-tracker/app/db"
-	"github.com/skeletonkey/tv-tracker/app/tvdb"
 )
-
-func setRoutes(e *echo.Echo) {
-	e.GET("/search/:query", searchHandler)
-
-	group := e.Group("/api/v1")
-
-	// User
-	group.POST("/user", createUser)
-	group.GET("/user", getUser)
-
-}
 
 func createUser(c echo.Context) error {
 	log := logger.Get()
@@ -46,18 +34,6 @@ func createUser(c echo.Context) error {
 
 	log.Info().Str("userId", userId).Msg("User created")
 	return c.JSON(http.StatusCreated, map[string]string{"user_id": userId})
-}
-
-func searchHandler(c echo.Context) error {
-	query := c.Param("query")
-	res, err := tvdb.Search(query)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
-	}
-	if len(res) == 0 {
-		return c.String(http.StatusNoContent, "")
-	}
-	return c.JSON(http.StatusOK, res)
 }
 
 func getUser(c echo.Context) error {
