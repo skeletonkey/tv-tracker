@@ -7,10 +7,10 @@ import (
 func setRoutes(e *echo.Echo) {
 	e.GET("/search/:query", searchHandler)
 
-	group := e.Group("/api/v1")
+	v1Group := e.Group("/api/v1")
 
 	// User
-	group.POST("/user", createUser)
-	group.GET("/user", getUserId)
+	v1Group.POST("/user", createUser)
+	v1Group.GET("/user", getUserId)
 
 }
