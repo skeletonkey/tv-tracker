@@ -12,6 +12,8 @@ import (
 
 const bcryptCost = 10
 
+// CreateUser creates a new user in the database with the provided username, email, and password.
+// It generates a unique UUID for the user and securely hashes the password before storing it.
 func CreateUser(username, email, password string) (string, error) {
 	conn := getDb()
 
