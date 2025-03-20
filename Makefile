@@ -3,6 +3,7 @@
 
 include Makefile.db
 
+
 build:
 	go fmt ./...
 	go vet ./...

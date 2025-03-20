@@ -16,8 +16,8 @@ func main() {
 			"github.com/patrickmn/go-cache",
 			"golang.org/x/crypto",
 		),
-		app.WithGoVersion("1.23"),
-		app.WithMakefile(),
+		app.WithGoVersion("1.24.1"),
+		app.WithMakefile("db"),
 		app.WithPackages("db", "server", "tvdb"),
 	).Generate()
 }

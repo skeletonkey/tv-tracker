@@ -1,6 +1,6 @@
 module github.com/skeletonkey/tv-tracker
 
-go 1.23.0
+go 1.24.1
 
 require (
 	github.com/go-playground/validator/v10 v10.25.0
@@ -9,7 +9,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/skeletonkey/lib-core-go v0.3.0
-	github.com/skeletonkey/lib-instance-gen-go v0.7.3
+	github.com/skeletonkey/lib-instance-gen-go v0.8.0
 	golang.org/x/crypto v0.36.0
 )
 
