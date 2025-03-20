@@ -33,7 +33,8 @@ func CreateUser(username, email, password string) (string, error) {
 	return userId, nil
 }
 
-func GetUser(username, password string) (string, error) {
+// GetUserId retrieves the user ID for a given username and password.
+func GetUserId(username, password string) (string, error) {
 	conn := getDb()
 
 	var userId, encPassword string

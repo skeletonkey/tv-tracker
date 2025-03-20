@@ -11,6 +11,6 @@ func setRoutes(e *echo.Echo) {
 
 	// User
 	group.POST("/user", createUser)
-	group.GET("/user", getUser)
+	group.GET("/user", getUserId)
 
 }

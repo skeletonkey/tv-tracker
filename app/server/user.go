@@ -36,9 +36,9 @@ func createUser(c echo.Context) error {
 	return c.JSON(http.StatusCreated, map[string]string{"user_id": userId})
 }
 
-func getUser(c echo.Context) error {
+func getUserId(c echo.Context) error {
 	log := logger.Get()
-	log.Trace().Msg("getUser")
+	log.Trace().Msg("getUserId")
 	var user User
 
 	if err := c.Bind(&user); err != nil {
@@ -52,7 +52,7 @@ func getUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	userId, err := db.GetUser(user.Username, user.Password)
+	userId, err := db.GetUserId(user.Username, user.Password)
 	if err != nil {
 		log.Debug().Str("username", user.Username).Err(err).Msg("Error finding user")
 		return c.NoContent(http.StatusNotFound)
