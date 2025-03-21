@@ -20,7 +20,13 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(sigChan,
+		syscall.SIGABRT, // Abort - terminate abnormally
+		syscall.SIGHUP,  // Hangup - terminal closed or process terminated
+		syscall.SIGINT,  // Ctrl+C
+		syscall.SIGQUIT, // Ctrl+\
+		syscall.SIGTERM, // Terminate - request graceful shutdown
+	)
 
 	db.InitDb(ctx, &wg)
 	server.Run(ctx, &wg)
