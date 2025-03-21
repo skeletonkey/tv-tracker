@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 
-	validator "github.com/go-playground/validator/v10"
 	echo "github.com/labstack/echo/v4"
 
 	"github.com/skeletonkey/lib-core-go/logger"
@@ -15,16 +14,9 @@ func createUser(c echo.Context) error {
 	log.Trace().Msg("createUser")
 	var user User
 
-	if err := c.Bind(&user); err != nil {
-		log.Debug().Err(err).Msg("Error Binding")
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(user); err != nil {
-		log.Debug().Err(err).Msg("Error Validating")
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-	}
+    if err := ValidateAndBind(c, &user); err != nil {
+        return err
+    }
 
 	userId, err := db.CreateUser(user.Username, user.Email, user.Password)
 	if err != nil {
@@ -41,16 +33,9 @@ func getUserId(c echo.Context) error {
 	log.Trace().Msg("getUserId")
 	var user User
 
-	if err := c.Bind(&user); err != nil {
-		log.Debug().Err(err).Msg("Error Binding")
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(user); err != nil {
-		log.Debug().Err(err).Msg("Error Validating")
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-	}
+    if err := ValidateAndBind(c, &user); err != nil {
+        return err
+    }
 
 	userId, err := db.GetUserId(user.Username, user.Password)
 	if err != nil {
