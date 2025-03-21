@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	maxEntriesReturned =  100
-	searchCacheExp = 60 * 24 // minutes
+	maxEntriesReturned = 100
+	searchCacheExp     = 60 * 24 // minutes
 )
 
 var c client
@@ -21,7 +21,7 @@ func getClient() (client, error) {
 				ApiKey: cfg.ApiKey,
 				Pin:    cfg.Pin,
 			},
-			baseUrl: cfg.BaseUrl,
+			baseUrl:      cfg.BaseUrl,
 			refreshToken: c.refreshToken,
 		}
 
@@ -67,7 +67,7 @@ func Search(search string) ([]SearchResult, error) {
 		}
 	}
 
-	SetCacheItem(cacheKey, result, searchCacheExp * time.Minute)
+	SetCacheItem(cacheKey, result, searchCacheExp*time.Minute)
 
 	return result, nil
 }

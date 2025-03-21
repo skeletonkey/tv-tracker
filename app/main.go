@@ -1,39 +1,44 @@
 package main
 
 import (
-	"net/http"
+	"context"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 
-	echo "github.com/labstack/echo/v4"
-	middleware "github.com/labstack/echo/v4/middleware"
-
-	"github.com/skeletonkey/tv-tracker/app/tvdb"
+	"github.com/skeletonkey/lib-core-go/logger"
+	"github.com/skeletonkey/tv-tracker/app/db"
+	"github.com/skeletonkey/tv-tracker/app/server"
 )
 
 func main() {
-	e := echo.New()
+	log := logger.Get()
+	log.Info().Msg("Starting Service")
 
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{
-			"http://localhost:8081",
-			"http://192.168.0.22:8081",
-			"http://0.0.0.0:8081",
-		},
-		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
-	}))
+	var wg sync.WaitGroup
+	ctx, cancel := context.WithCancel(context.Background())
 
-	e.GET("/search/:query", searchHandler)
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan,
+		syscall.SIGABRT, // Abort - terminate abnormally
+		syscall.SIGHUP,  // Hangup - terminal closed or process terminated
+		syscall.SIGINT,  // Ctrl+C
+		syscall.SIGQUIT, // Ctrl+\
+		syscall.SIGTERM, // Terminate - request graceful shutdown
+	)
 
-	e.Logger.Fatal(e.Start(":8083"))
-}
+	db.InitDb(ctx, &wg)
+	server.Run(ctx, &wg)
 
-func searchHandler(c echo.Context) error {
-	query := c.Param("query")
-	res, err := tvdb.Search(query)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+	select {
+	case sig := <-sigChan:
+		log.Info().Int("OS Signal", int(sig.(syscall.Signal))).Msg("OS Signal received")
+		cancel()
+	case <-ctx.Done():
+		log.Info().Msg("context has been cancelled")
 	}
-	if len(res) == 0 {
-		return c.String(http.StatusNoContent, "")
-	}
-	return c.JSON(http.StatusOK, res)
+
+	wg.Wait()
+	log.Info().Msg("Shutting down service")
 }

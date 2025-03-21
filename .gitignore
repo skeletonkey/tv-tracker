@@ -3,7 +3,7 @@
 
 bin
 
-config/*.conf
+config/*.json
 
 package-lock.json
 web/dist
