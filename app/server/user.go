@@ -14,9 +14,9 @@ func createUser(c echo.Context) error {
 	log.Trace().Msg("createUser")
 	var user User
 
-    if err := ValidateAndBind(c, &user); err != nil {
-        return err
-    }
+	if err := ValidateAndBind(c, &user); err != nil {
+		return err
+	}
 
 	userId, err := db.CreateUser(user.Username, user.Email, user.Password)
 	if err != nil {
@@ -33,9 +33,9 @@ func getUserId(c echo.Context) error {
 	log.Trace().Msg("getUserId")
 	var user User
 
-    if err := ValidateAndBind(c, &user); err != nil {
-        return err
-    }
+	if err := ValidateAndBind(c, &user); err != nil {
+		return err
+	}
 
 	userId, err := db.GetUserId(user.Username, user.Password)
 	if err != nil {
