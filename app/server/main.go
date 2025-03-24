@@ -45,5 +45,5 @@ func start(ctx context.Context, wg *sync.WaitGroup) {
 	if err := e.Shutdown(shutdownCtx); err != nil {
 		log.Fatal().Err(err).Msg("server shutdown failed")
 	}
-	log.Info().Msg("Server gracefully shutdown")
+	log.Info().Msg("Web Server gracefully shutdown")
 }
