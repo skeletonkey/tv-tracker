@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"os"
 	"sync"
 
@@ -29,10 +30,13 @@ func InitDb(ctx context.Context, wg *sync.WaitGroup) {
 	}(ctx, wg)
 
 	cfg := getConfig()
-	dbFile := "../" + cfg.File
+	// db file location depends on how the app is run/built
+	dbFile := cfg.File
 	if _, err := os.Stat(dbFile); err != nil {
-		if err != nil {
-			log.Fatal().Err(err).Str("dbFile", dbFile).Msg("Issues with DB File")
+		dbFile = "../" + cfg.File
+		allErr := fmt.Errorf("checked %s: %s", cfg.File, err)
+		if _, err := os.Stat(dbFile); err != nil {
+			log.Fatal().Err(fmt.Errorf("%s and Checked %s: %s", allErr, dbFile, err)).Msg("Issues with DB File")
 		}
 	}
 
