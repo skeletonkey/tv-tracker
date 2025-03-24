@@ -10,4 +10,4 @@ web/dist
 web/node_modules
 web/package-lock.json
 
-tvtracker.db
+database/tvtracker.db
