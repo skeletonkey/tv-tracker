@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/url"
 	"time"
+
+	"github.com/skeletonkey/lib-core-go/logger"
 )
 
 const (
@@ -36,16 +38,22 @@ func getClient() (client, error) {
 	return c, nil
 }
 
-func Search(search string) ([]SearchResult, error) {
+func Search(search string, skip_cache bool) ([]SearchResult, error) {
+	log := logger.Get()
+	log.Trace().Msg("Search")
+	log.Info().Str("search", search).Bool("skip_cache", skip_cache).Msg("Searching")
+
 	cacheKey := GenCacheKey("search_" + search)
 	c, err := getClient()
 	if err != nil {
 		return nil, err
 	}
 
-	if item, found := GetCacheItem(cacheKey); found {
-		fmt.Printf("Cache hit for %s\n", search)
-		return item.([]SearchResult), nil
+	if !skip_cache {
+		if item, found := GetCacheItem(cacheKey); found {
+			log.Info().Str("Cache Key", cacheKey).Msg("Cache hit")
+			return item.([]SearchResult), nil
+		}
 	}
 
 	var sp SearchPage
@@ -59,7 +67,8 @@ func Search(search string) ([]SearchResult, error) {
 	for sp.Links.Next != "" && sp.Links.Next != sp.Links.Self {
 		err = c.makeCall("GET", sp.Links.Next, nil, &sp)
 		if err != nil {
-			return nil, fmt.Errorf("error searching for next page results(%s): %s", sp.Links.Next, err)
+			log.Error().Err(err).Str("Next", sp.Links.Next).Msg("Error searching for next page results")
+			break
 		}
 		result = append(result, sp.Data...)
 		if len(result) >= maxEntriesReturned {
